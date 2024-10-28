@@ -29,6 +29,8 @@ TODO: We will make a dependencies.txt file in which we will maintain all the dep
 
 To get the server running: `python manage.py runserver`
 
+you must run `python manage.py makemigrations` then `python manage.py migrate` anytime you make any change to any database models  
+
 ## Authors
 
 Ari Rojas
