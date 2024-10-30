@@ -13,6 +13,7 @@ We are using a virtual environment, to get that set up, we used these commands:
 `python -m venv myenv`
 Then to activate: 
 `source myenv/bin/activate `
+on Windows: myenv\Scripts\activate
 To install Django: 
 `pip install django`
 In order to initialize a Django project within this repo, run this command: 
