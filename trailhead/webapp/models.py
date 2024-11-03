@@ -9,21 +9,34 @@ class TodoItem(models.Model):
     title = models.CharField(max_length=200)
     completed = models.BooleanField(default=False)
 
-from django.db import models
-#defines the structure of our data, 
-#specifying fields / attributes and 
-# types like strings, integers, dates
-# Models in Django map to database tables
-# so each instance of a model is a row in that table.
-class Trip(models.Model):
-    title = models.CharField(max_length=100)
-    tripLeader = models.CharField(max_length=100)
-    date = models.DateField()
-    #attendees = models.CharField(max_length=13, unique=True)
-    #TKTK will be fleshed out with colin's data base info 
+class Subclub(models.Model):
+    subclub_name = models.CharField(max_length=255)
 
     def __str__(self):
-        return self.title
-    
-    #trip registration ID  
-    #student ID 
+        return self.subclub_name
+
+class Trip(models.Model):
+    trip_name = models.CharField(max_length=255)
+    trip_date = models.DateField()
+    trip_description = models.TextField()
+    trip_leader = models.CharField(max_length=255)
+    trip_capacity = models.IntegerField()
+    subclub = models.ForeignKey(Subclub, on_delete=models.CASCADE)
+
+    def __str__(self):
+        return self.trip_name
+
+class Student(models.Model):
+    student_name = models.CharField(max_length=255)
+    email = models.EmailField()
+
+    def __str__(self):
+        return self.student_name
+
+class TripRegistration(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+
+class Waitlist(models.Model):
+    student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)

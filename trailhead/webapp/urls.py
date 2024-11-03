@@ -8,4 +8,5 @@ urlpatterns = [
     path("", views.home, name ="home"), #this is an empty path to the base URL of our website
     path("todos/", views.todos, name = "Todos"),
     path('api/trips/', TripCreate.as_view(), name='trip-create'),
+    path("trips/create/", views.create_trip, name="create_trip"),
 ]
