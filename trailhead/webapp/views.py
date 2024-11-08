@@ -5,6 +5,18 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Trip
 from .serializer import TripSerializer
+from rest_framework.decorators import api_view
+from rest_framework import viewsets
+
+@api_view(['GET'])
+def trip_detail(request, trip_id):
+    try:
+        trip = Trip.objects.get(id=trip_id)
+        serializer = TripSerializer(trip)
+        return Response(serializer.data)
+    except Trip.DoesNotExist:
+        return Response({'error': 'Trip not found'}, status=404)
+
 
 # Create views 
 def home(request): 
@@ -60,3 +72,20 @@ class TripCreate(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+@api_view(['GET'])
+def trip_detail(request, trip_id):
+    try:
+        trip = Trip.objects.get(id=trip_id)
+        serializer = TripSerializer(trip)
+        return Response(serializer.data)
+    except Trip.DoesNotExist:
+        return Response({'error': 'Trip not found'}, status=404)
+    
+class TripViewSet(viewsets.ReadOnlyModelViewSet):
+    queryset = Trip.objects.all()
+    serializer_class = TripSerializer
+
+

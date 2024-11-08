@@ -11,3 +11,6 @@ class TripSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trip
         fields = ['id', 'trip_name', 'trip_date', 'trip_description', 'trip_leader', 'trip_capacity', 'subclub']
+
+
+
