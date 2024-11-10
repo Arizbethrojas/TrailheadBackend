@@ -4,7 +4,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
 from .models import Trip
-from .serializer import TripSerializer
+from .serializer import TripSerializer, SubclubSerializer
 
 # Create views 
 def home(request): 
@@ -60,3 +60,9 @@ class TripCreate(APIView):
             serializer.save()
             return Response(serializer.data, status=status.HTTP_201_CREATED)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+class SubclubList(APIView):
+    def get(self, request):
+        subclubs = Subclub.objects.all()
+        serializer = SubclubSerializer(subclubs, many=True)
+        return Response(serializer.data)
