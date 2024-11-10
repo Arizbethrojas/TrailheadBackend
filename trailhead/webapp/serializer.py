@@ -10,7 +10,7 @@ from .models import Trip, Subclub
 class TripSerializer(serializers.ModelSerializer):
     class Meta:
         model = Trip
-        fields = ['id', 'trip_name', 'trip_date', 'trip_description', 'trip_leader', 'trip_capacity', 'subclub']
+        fields = ['id', 'trip_name', 'trip_date', 'trip_description', 'trip_leader', 'trip_capacity', 'subclub', 'trip_location', 'trip_provided', 'trip_bring', 'trip_type', 'trip_level']
 
 class SubclubSerializer(serializers.ModelSerializer):
     class Meta:
