@@ -20,6 +20,7 @@ In order to initialize a Django project within this repo, run this command:
 ` django-admin startproject trip_planner_backend`
 Next, to set up a virtual environment for Python related dependencies and the djangorestframework, run this command: 
 `pip install django djangorestframework`
+`pip install django-cors-headers`
 Then to run the server use this command: 
 `python manage.py runserver`
 
