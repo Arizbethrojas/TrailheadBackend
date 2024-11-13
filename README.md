@@ -24,6 +24,7 @@ Next, to set up a virtual environment for Python related dependencies and the dj
 Then to run the server use this command: 
 `python manage.py runserver`
 
+
 ## Deployment
 
 TODO: We will make a dependencies.txt file in which we will maintain all the dependecies this project requires so that we can run this script: 
