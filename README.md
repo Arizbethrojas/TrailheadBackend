@@ -41,4 +41,10 @@ Colin Kearns
 
 ## Acknowledgments
 
+## To hardcode a trip into the database
+python manage.py shell
+from webapp.models import Trip
+trip = Trip(info)
+trip.save()
+
 
