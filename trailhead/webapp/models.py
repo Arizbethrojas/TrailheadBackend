@@ -57,3 +57,4 @@ class TripRegistration(models.Model):
 class Waitlist(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+
