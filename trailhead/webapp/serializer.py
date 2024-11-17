@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trip, Subclub
+from .models import Trip, Subclub, TripRegistration
 
 # class TripSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -16,3 +16,8 @@ class SubclubSerializer(serializers.ModelSerializer):
     class Meta:
         model = Subclub
         fields = ['id', 'subclub_name']
+
+class TripRegistrationSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TripRegistration
+        fields = ['id', 'student', 'trip']

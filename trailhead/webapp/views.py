@@ -3,8 +3,8 @@ from .models import TodoItem, Trip, Subclub
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Trip
-from .serializer import TripSerializer, SubclubSerializer
+from .models import Trip, TripRegistration, Student
+from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
 
 # Create views 
 def home(request): 
@@ -66,3 +66,29 @@ class SubclubList(APIView):
         subclubs = Subclub.objects.all()
         serializer = SubclubSerializer(subclubs, many=True)
         return Response(serializer.data)
+    
+class RegisterTrip(APIView):
+    def post(self, request):
+        student_id = request.data.get('student_id')
+        trip_id = request.data.get('trip_id')
+
+        if not student_id or not trip_id:
+            return Response({'error': 'Student ID and Trip ID required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            student = Student.objects.get(id=student_id)
+            trip = Trip.objects.get(id=trip_id)
+
+            registration = TripRegistration(student=student, trip=trip)
+            registration.save()
+
+            serializer = TripRegistrationSerializer(registration)
+
+            return Response({
+                'registration_id': serializer.data,
+                'message': 'Successfully registered for the trip!'
+            }, status=status.HTTP_201_CREATED)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found' }, status=status.HTTP_404_NOT_FOUND)
+        except Trip.DoesNotExist:
+            return Response({'error': 'Trip not found' }, status=status.HTTP_404_NOT_FOUND)
