@@ -1,6 +1,6 @@
 #here is where we will place different URL routes and then connect them to our views 
 from django.urls import path 
-from .views import TripCreate, SubclubList, RegisterTrip
+from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent
 from . import views
 
 # list of our paths
@@ -11,4 +11,5 @@ urlpatterns = [
     path("trips/create/", views.create_trip, name="create_trip"),
     path("api/subclubs/", SubclubList.as_view(), name="subclub-list"),
     path("api/register_trip/", RegisterTrip.as_view(), name="register_trip"),
+    path('api/trip-registrations/student/<int:student_id>/', ViewRegistrationsByStudent.as_view(), name='view_registrations_by_student')
 ]
