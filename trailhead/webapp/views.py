@@ -92,3 +92,14 @@ class RegisterTrip(APIView):
             return Response({'error': 'Student not found' }, status=status.HTTP_404_NOT_FOUND)
         except Trip.DoesNotExist:
             return Response({'error': 'Trip not found' }, status=status.HTTP_404_NOT_FOUND)
+
+#Get trips that a specific student is on 
+class ViewRegistrationsByStudent(APIView):
+    def get(self, request, student_id):
+        try:
+            registrations = TripRegistration.objects.filter(student_id = student_id).select_related('trip')
+            trips = [registration.trip for registration in registrations]
+            serializer = TripSerializer(trips, many=True)
+            return Response(serializer.data, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
