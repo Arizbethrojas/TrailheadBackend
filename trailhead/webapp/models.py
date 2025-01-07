@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 # Django provides an object relational mapping (ORM)
 # allows us to write python code to create database models and 
@@ -44,9 +45,8 @@ class Trip(models.Model):
         return self.trip_name
 
 class Student(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_name = models.CharField(max_length=255)
-    email = models.EmailField()
-
     def __str__(self):
         return self.student_name
 
