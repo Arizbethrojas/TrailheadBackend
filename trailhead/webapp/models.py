@@ -47,6 +47,7 @@ class Trip(models.Model):
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_name = models.CharField(max_length=255)
+    is_trip_leader = models.BooleanField(default=False)
     def __str__(self):
         return self.student_name
 
