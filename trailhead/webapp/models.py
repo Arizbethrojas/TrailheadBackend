@@ -5,6 +5,8 @@ from django.db import models
 # then those models are AUTOMATICALLY created for us in SQL light 3 
 # we make a migration, which is automated code, which creates the corresponding model in SQL or mongoDB
 
+#these are all of the tables in our db
+
 class TodoItem(models.Model): 
     title = models.CharField(max_length=200)
     completed = models.BooleanField(default=False)
@@ -50,11 +52,18 @@ class Student(models.Model):
     def __str__(self):
         return self.student_name
 
+class TripLeader(models.Model):
+    leader_name = models.ForeignKey(Student, on_delete=models.CASCADE)
+    leader_subclub = models.ForeignKey(Subclub, on_delete=models.CASCADE)
+
 class TripRegistration(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
 
 class Waitlist(models.Model):
-    student = models.ForeignKey(Student, on_delete=models.CASCADE)
-    trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
+    waitlist_student = models.ForeignKey(Student, on_delete=models.CASCADE)
+    waitlist_trip = models.ForeignKey(Trip, on_delete=models.CASCADE)
 
+class Enemies(models.Model):
+    complainer_id = models.ForeignKey(Student, related_name='complainers', on_delete=models.CASCADE)
+    receiver_id = models.ForeignKey(Student, related_name='receivers', on_delete=models.CASCADE)
