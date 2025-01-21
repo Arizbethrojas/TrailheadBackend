@@ -3,6 +3,7 @@ from .models import TodoItem, Trip, Subclub, TripRegistration, Student
 from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .permissions import IsTripLeader
 from rest_framework import status
 from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
 from django.contrib.auth.forms import UserCreationForm
@@ -107,6 +108,13 @@ def sign_up_step3(request):
     else:
         form = ProfilePreferencesForm()
     return render(request, 'sign_up_step3.html', {'form': form})
+
+class TripLeaderView(APIView):
+    permission_classes = [IsTripLeader]
+
+    def get(self, request):
+        # Your logic for trip leaders
+        return Response({"message": "Welcome, Trip Leader!"}, status=status.HTTP_200_OK)
 
 class TripCreate(APIView):
     #Retrieves all Trip entries 
