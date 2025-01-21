@@ -50,6 +50,12 @@ class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
     student_name = models.CharField(max_length=255)
     is_trip_leader = models.BooleanField(default=False)
+    allergies = models.TextField(blank=True, null=True)
+    class_year = models.CharField(max_length=4, blank=True, null=True)  # e.g., 2025
+    pronouns = models.CharField(max_length=50, blank=True, null=True)
+    profile_picture = models.ImageField(upload_to='profile_pics/', blank=True, null=True)
+    favorite_subclubs = models.ManyToManyField('Subclub', blank=True)
+
     def __str__(self):
         return self.student_name
 

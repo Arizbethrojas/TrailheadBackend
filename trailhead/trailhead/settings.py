@@ -35,6 +35,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#HANDLE MEDIA 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Application definition
 # here we can add any additional apps, such as trip leaders, admin, regular users etc
 INSTALLED_APPS = [
