@@ -5,6 +5,8 @@ from rest_framework.response import Response
 from rest_framework import status
 from .models import Trip, TripRegistration, Student
 from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 # Create views 
 def home(request): 
@@ -45,6 +47,17 @@ def create_trip(request):
         return redirect(home)
     #return the trip creation form on GET request
     return render(request, "create_trip.html")
+
+def sign_up(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            user = form.save()  # Save the user
+            Student.objects.create(user=user) # this line will link a student object to a Django's generic user model 
+            return redirect(home)  # Redirect to home or login page
+    else:
+        form = UserCreationForm()
+    return render(request, 'sign_up.html', {'form': form})
 
 class TripCreate(APIView):
     #Retrieves all Trip entries 
