@@ -35,6 +35,10 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#HANDLE MEDIA 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+
 # Application definition
 # here we can add any additional apps, such as trip leaders, admin, regular users etc
 INSTALLED_APPS = [
@@ -159,3 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
 ]
+
+# Redirect URLs after login/logout
+LOGIN_REDIRECT_URL = '/'  # Or wherever you want users to go after logging in
+LOGOUT_REDIRECT_URL = '/'  # Redirect after logging out
