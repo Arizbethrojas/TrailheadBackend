@@ -17,7 +17,7 @@ on Windows: myenv\Scripts\activate
 To install Django: 
 `pip install django`
 In order to initialize a Django project within this repo, run this command: 
-` django-admin startproject trip_planner_backend`
+` django-admin startproject trip_planner_backend` --don't run this every time
 Next, to set up a virtual environment for Python related dependencies and the djangorestframework, run this command: 
 `pip install django djangorestframework`
 `pip install django-cors-headers`
