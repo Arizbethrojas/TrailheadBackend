@@ -163,3 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
 ]
+
+# Redirect URLs after login/logout
+LOGIN_REDIRECT_URL = '/'  # Or wherever you want users to go after logging in
+LOGOUT_REDIRECT_URL = '/'  # Redirect after logging out
