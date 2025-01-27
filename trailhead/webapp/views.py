@@ -85,16 +85,27 @@ def sign_up_step3(request):
     if request.method == "POST":
         form = ProfilePreferencesForm(request.POST, request.FILES)
         if form.is_valid():
-            # Finalize and save the Student profile
+            # Fetch the user
             user = User.objects.get(id=request.session['user_id'])
-            student = Student.objects.create(
-                user=user,
-                student_name=user.username,
-                is_trip_leader=request.session.get('is_trip_leader', False),
-                allergies=request.session.get('allergies', ''),
-                class_year=request.session.get('class_year', ''),
-                pronouns=request.session.get('pronouns', '')
+
+            # Check if the Student record already exists
+            student, created = Student.objects.get_or_create(
+                user=user,  # Match on user
+                defaults={  # Fields to set if creating a new record
+                    'student_name': user.username,
+                    'is_trip_leader': request.session.get('is_trip_leader', False),
+                    'allergies': request.session.get('allergies', ''),
+                    'class_year': request.session.get('class_year', ''),
+                    'pronouns': request.session.get('pronouns', '')
+                }
             )
+
+            # If the record already exists, update the fields
+            if not created:
+                student.is_trip_leader = request.session.get('is_trip_leader', False)
+                student.allergies = request.session.get('allergies', '')
+                student.class_year = request.session.get('class_year', '')
+                student.pronouns = request.session.get('pronouns', '')
 
             # Save the profile picture
             if form.cleaned_data['profile_picture']:
@@ -108,6 +119,7 @@ def sign_up_step3(request):
     else:
         form = ProfilePreferencesForm()
     return render(request, 'sign_up_step3.html', {'form': form})
+
 
 class TripLeaderView(APIView):
     permission_classes = [IsTripLeader]
