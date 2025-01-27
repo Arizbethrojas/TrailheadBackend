@@ -27,45 +27,45 @@ class Migration(migrations.Migration):
                 to=settings.AUTH_USER_MODEL,
             ),
         ),
-        migrations.AddField(
-            model_name="trip",
-            name="trip_bring",
-            field=models.TextField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name="trip",
-            name="trip_level",
-            field=models.CharField(
-                blank=True,
-                choices=[
-                    ("beginner", "Beginner"),
-                    ("intermediate", "Intermediate"),
-                    ("advanced", "Advanced"),
-                ],
-                max_length=20,
-                null=True,
-            ),
-        ),
-        migrations.AddField(
-            model_name="trip",
-            name="trip_location",
-            field=models.CharField(blank=True, max_length=255, null=True),
-        ),
-        migrations.AddField(
-            model_name="trip",
-            name="trip_provided",
-            field=models.TextField(blank=True, null=True),
-        ),
-        migrations.AddField(
-            model_name="trip",
-            name="trip_type",
-            field=models.CharField(
-                blank=True,
-                choices=[("day_trip", "Day Trip"), ("overnight_trip", "Overnight")],
-                max_length=20,
-                null=True,
-            ),
-        ),
+        # migrations.AddField(
+        #     model_name="trip",
+        #     name="trip_bring",
+        #     field=models.TextField(blank=True, null=True),
+        # ),
+        # migrations.AddField(
+        #     model_name="trip",
+        #     name="trip_level",
+        #     field=models.CharField(
+        #         blank=True,
+        #         choices=[
+        #             ("beginner", "Beginner"),
+        #             ("intermediate", "Intermediate"),
+        #             ("advanced", "Advanced"),
+        #         ],
+        #         max_length=20,
+        #         null=True,
+        #     ),
+        # ),
+        # migrations.AddField(
+        #     model_name="trip",
+        #     name="trip_location",
+        #     field=models.CharField(blank=True, max_length=255, null=True),
+        # ),
+        # migrations.AddField(
+        #     model_name="trip",
+        #     name="trip_provided",
+        #     field=models.TextField(blank=True, null=True),
+        # ),
+        # migrations.AddField(
+        #     model_name="trip",
+        #     name="trip_type",
+        #     field=models.CharField(
+        #         blank=True,
+        #         choices=[("day_trip", "Day Trip"), ("overnight_trip", "Overnight")],
+        #         max_length=20,
+        #         null=True,
+        #     ),
+        # ),
         migrations.AlterField(
             model_name="trip",
             name="trip_description",

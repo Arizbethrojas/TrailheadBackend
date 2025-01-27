@@ -92,7 +92,7 @@ class RegisterTrip(APIView):
             return Response({'error': 'Student not found' }, status=status.HTTP_404_NOT_FOUND)
         except Trip.DoesNotExist:
             return Response({'error': 'Trip not found' }, status=status.HTTP_404_NOT_FOUND)
-
+        
 #Get trips that a specific student is on 
 class ViewRegistrationsByStudent(APIView):
     def get(self, request, student_id):

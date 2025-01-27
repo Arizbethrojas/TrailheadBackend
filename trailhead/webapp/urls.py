@@ -1,6 +1,8 @@
 #here is where we will place different URL routes and then connect them to our views 
 from django.urls import path 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
+#changing to be djangorestframework
+# from djangorestframework import TokenObtainPairView, TokenRefreshView
 from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent
 from . import views
 
