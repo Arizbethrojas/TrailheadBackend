@@ -25,7 +25,8 @@ class TripRegistrationSerializer(serializers.ModelSerializer):
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
         model = Student
-        fields = ['id', 'student_name', 'email']
+        fields = ['id', 'student_name', 'is_trip_leader', 'allergies', 'class_year', 'pronouns', 'profile_picture', 'favorite_subclubs']
+
 
 class TripLeaderSerializer(serializers.ModelSerializer):
     class Meta:

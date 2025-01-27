@@ -1,10 +1,13 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import TodoItem, Trip, Subclub
+from .models import TodoItem, Trip, Subclub, TripRegistration, Student
+from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
+from .permissions import IsTripLeader
 from rest_framework import status
-from .models import Trip, TripRegistration, Student
 from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
+from django.contrib.auth.forms import UserCreationForm
+from django.contrib.auth.models import User
 
 # Create views 
 def home(request): 
@@ -45,6 +48,85 @@ def create_trip(request):
         return redirect(home)
     #return the trip creation form on GET request
     return render(request, "create_trip.html")
+
+# Step 1: Basic Info
+def sign_up_step1(request):
+    if request.method == "POST":
+        form = BasicInfoForm(request.POST)
+        if form.is_valid():
+            user = form.save(commit=False)
+            user.set_password(form.cleaned_data['password'])
+            user.save()
+
+            # Save basic info in the session for later use
+            request.session['is_trip_leader'] = form.cleaned_data['is_trip_leader']
+            request.session['user_id'] = user.id
+            return redirect('sign_up_step2')
+    else:
+        form = BasicInfoForm()
+    return render(request, 'sign_up_step1.html', {'form': form})
+
+# Step 2: Personal Details
+def sign_up_step2(request):
+    if request.method == "POST":
+        form = PersonalDetailsForm(request.POST)
+        if form.is_valid():
+            # Save data in session for the next step
+            request.session['allergies'] = form.cleaned_data['allergies']
+            request.session['class_year'] = form.cleaned_data['class_year']
+            request.session['pronouns'] = form.cleaned_data['pronouns']
+            return redirect('sign_up_step3')
+    else:
+        form = PersonalDetailsForm()
+    return render(request, 'sign_up_step2.html', {'form': form})
+
+# Step 3: Profile Preferences
+def sign_up_step3(request):
+    if request.method == "POST":
+        form = ProfilePreferencesForm(request.POST, request.FILES)
+        if form.is_valid():
+            # Fetch the user
+            user = User.objects.get(id=request.session['user_id'])
+
+            # Check if the Student record already exists
+            student, created = Student.objects.get_or_create(
+                user=user,  # Match on user
+                defaults={  # Fields to set if creating a new record
+                    'student_name': user.username,
+                    'is_trip_leader': request.session.get('is_trip_leader', False),
+                    'allergies': request.session.get('allergies', ''),
+                    'class_year': request.session.get('class_year', ''),
+                    'pronouns': request.session.get('pronouns', '')
+                }
+            )
+
+            # If the record already exists, update the fields
+            if not created:
+                student.is_trip_leader = request.session.get('is_trip_leader', False)
+                student.allergies = request.session.get('allergies', '')
+                student.class_year = request.session.get('class_year', '')
+                student.pronouns = request.session.get('pronouns', '')
+
+            # Save the profile picture
+            if form.cleaned_data['profile_picture']:
+                student.profile_picture = form.cleaned_data['profile_picture']
+
+            # Save favorite subclubs
+            student.save()
+            student.favorite_subclubs.set(form.cleaned_data['favorite_subclubs'])
+
+            return redirect('home')
+    else:
+        form = ProfilePreferencesForm()
+    return render(request, 'sign_up_step3.html', {'form': form})
+
+
+class TripLeaderView(APIView):
+    permission_classes = [IsTripLeader]
+
+    def get(self, request):
+        # Your logic for trip leaders
+        return Response({"message": "Welcome, Trip Leader!"}, status=status.HTTP_200_OK)
 
 class TripCreate(APIView):
     #Retrieves all Trip entries 

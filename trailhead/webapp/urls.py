@@ -5,6 +5,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 # from djangorestframework import TokenObtainPairView, TokenRefreshView
 from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent
 from . import views
+from django.contrib.auth import views as auth_views
 
 
 # list of our paths
@@ -17,5 +18,10 @@ urlpatterns = [
     path("api/register_trip/", RegisterTrip.as_view(), name="register_trip"),
     path('api/trip-registrations/student/<int:student_id>/', ViewRegistrationsByStudent.as_view(), name='view_registrations_by_student'),
     path('api/token/', TokenObtainPairView.as_view(), name='token_obtain_pair'),
-    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh')
+    path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
+    path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
+    path('logout/', auth_views.LogoutView.as_view(), name='logout'), 
+    path('sign_up_step1/', views.sign_up_step1, name='sign_up_step1'),
+    path('sign_up_step2/', views.sign_up_step2, name='sign_up_step2'),
+    path('sign_up_step3/', views.sign_up_step3, name='sign_up_step3'),
 ]
