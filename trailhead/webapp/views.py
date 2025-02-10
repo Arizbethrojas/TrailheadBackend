@@ -5,9 +5,13 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import IsTripLeader
 from rest_framework import status
-from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
+from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, StudentSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from rest_framework_simplejwt.tokens import RefreshToken
+from django.views.decorators.csrf import csrf_exempt
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import AllowAny
 
 # Create views 
 def home(request): 
@@ -120,6 +124,35 @@ def sign_up_step3(request):
         form = ProfilePreferencesForm()
     return render(request, 'sign_up_step3.html', {'form': form})
 
+@csrf_exempt  
+@api_view(['POST'])
+@permission_classes([AllowAny])
+def RegisterStudent(request):
+    username = request.data.get('username')
+    email = request.data.get('email')
+    password = request.data.get('password')
+
+    if not username or not email or not password:
+        return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(username=username).exists():
+        return Response({"error": "Username already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+    if User.objects.filter(email=email).exists():
+        return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
+
+    user = User.objects.create_user(username=username, email=email, password=password)
+
+    # Generate JWT tokens for authentication
+    refresh = RefreshToken.for_user(user)
+    access_token = str(refresh.access_token)
+
+    return Response({
+        "username": user.username,
+        "email": user.email,
+        "access_token": access_token,
+        "refresh_token": str(refresh),
+    }, status=status.HTTP_201_CREATED)
 
 class TripLeaderView(APIView):
     permission_classes = [IsTripLeader]
@@ -185,3 +218,4 @@ class ViewRegistrationsByStudent(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+        
