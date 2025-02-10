@@ -1,5 +1,5 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import TodoItem, Trip, Subclub, TripRegistration, Student
+from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Notification
 from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
@@ -10,6 +10,12 @@ from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
 # Create views 
+
+#creates notification list for each user
+def notification_list (request):
+    notifications = Notification.objects.filter(user=request.user.student).order_by('-created_at') 
+    return render(request, 'notifications_list.html', {'notifications': notifications}) 
+
 def home(request): 
     return render(request, "home.html")
 
@@ -44,6 +50,15 @@ def create_trip(request):
             subclub = subclub
             )
         new_trip.save() #save to the database
+
+         # notify students
+        students = Student.objects.filter(favorite_subclubs=subclub) # find students who mark this as favorite subclub
+        for student in students:
+            Notification.objects.create(
+                user=student,
+                message=f"New trip added! '{new_trip.trip_name}'",
+                notification_type='new_trip'
+            )
 
         return redirect(home)
     #return the trip creation form on GET request

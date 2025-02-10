@@ -63,6 +63,17 @@ class TripLeader(models.Model):
     leader_name = models.ForeignKey(Student, on_delete=models.CASCADE)
     leader_subclub = models.ForeignKey(Subclub, on_delete=models.CASCADE)
 
+# notifications for upcoming trips and achievements made (also trip updates)
+class Notification(models.Model):
+    user = models.ForeignKey(Student, on_delete=models.CASCADE)  # many notfications to one user
+    message = models.TextField()                             
+    notification_type = models.CharField(max_length=200)     # Type of notification (e.g., 'newtrip', 'fav_subclub', etc.)
+    created_at = models.DateTimeField(auto_now_add=True)  
+    is_read = models.BooleanField(default=False)             
+
+    def __str__(self):
+        return f"{self.user.username}: {self.message[:20]}"  
+
 class TripRegistration(models.Model):
     student = models.ForeignKey(Student, on_delete=models.CASCADE)
     trip = models.ForeignKey(Trip, on_delete=models.CASCADE)

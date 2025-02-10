@@ -22,4 +22,7 @@ urlpatterns = [
     path('sign_up_step1/', views.sign_up_step1, name='sign_up_step1'),
     path('sign_up_step2/', views.sign_up_step2, name='sign_up_step2'),
     path('sign_up_step3/', views.sign_up_step3, name='sign_up_step3'),
+    path("notifications/", views.notification_list , name="notification_list"),
+    # path('api/notifications/', views.notification_list, name='notification_list'),
+    # path('api/notifications/create/', views.create_notification, name='create_notification')
 ]

@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trip, Subclub, TripRegistration, Student, TripLeader, Waitlist, Enemies
+from .models import Trip, Subclub, TripRegistration, Student, TripLeader, Waitlist, Enemies, Notification
 
 # class TripSerializer(serializers.ModelSerializer):
 #     class Meta:
