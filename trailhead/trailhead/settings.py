@@ -167,3 +167,8 @@ CORS_ALLOWED_ORIGINS = [
 # Redirect URLs after login/logout
 LOGIN_REDIRECT_URL = '/'  # Or wherever you want users to go after logging in
 LOGOUT_REDIRECT_URL = '/'  # Redirect after logging out
+
+#added by sammy bc no axios requests were working
+CSRF_COOKIE_NAME = 'csrftoken'
+CSRF_USE_SESSIONS = False
+CSRF_COOKIE_SAMESITE = 'None'
