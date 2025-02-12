@@ -379,15 +379,27 @@ class ViewRegistrationsByStudent(APIView):
 class StudentProfileView(APIView):
     def get(self, request):
         try:
-            # Get student profile linked to the authenticated user
             student = Student.objects.get(user=request.user)
+            
+            # Get registered trips
+            registered_trips = Trip.objects.filter(
+                tripregistration__student=student
+            )
+            
+            # Get trips where user is leader
+            led_trips = Trip.objects.filter(
+                trip_leader=student.student_name  # Assuming trip_leader stores the student_name
+            )
+
             return Response({
                 'student_name': student.student_name,
                 'class_year': student.class_year,
                 'pronouns': student.pronouns,
                 'allergies': student.allergies,
                 'is_trip_leader': student.is_trip_leader,
-                'id': student.id
+                'id': student.id,
+                'registered_trips': TripSerializer(registered_trips, many=True).data,
+                'led_trips': TripSerializer(led_trips, many=True).data
             })
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
