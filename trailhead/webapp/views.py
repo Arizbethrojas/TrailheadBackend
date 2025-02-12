@@ -8,6 +8,57 @@ from rest_framework import status
 from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
+from django.views.decorators.csrf import csrf_exempt
+
+
+# views.py
+from django.http import JsonResponse
+from .firebase.firebase_admin import db
+from .firebase.firebase_admin import firestore
+
+import json
+
+@csrf_exempt
+def send_message(request):
+    if request.method == "POST":
+        try:
+            # Parse the JSON body
+            data = json.loads(request.body)
+            message_text = data.get("message", "")
+            sender = data.get("sender", "Anonymous")
+
+            if message_text:
+                # Save the message to Firestore
+                message_ref = db.collection('messages').add({
+                    "text": message_text,
+                    "sender": sender,
+                    "timestamp": firestore.SERVER_TIMESTAMP,
+                })
+                return JsonResponse({"status": "success", "message": "Message sent"})
+            else:
+                return JsonResponse({"status": "error", "message": "Message text is empty"})
+        except json.JSONDecodeError:
+            return JsonResponse({"status": "error", "message": "Invalid JSON format"})
+    else:
+        return JsonResponse({"status": "error", "message": "Invalid request method"})
+
+def get_messages(request):
+    # Get messages from Firestore
+    messages_ref = db.collection('messages').order_by('timestamp')
+    messages = messages_ref.stream()
+
+    # Prepare the response data
+    message_data = []
+    for message in messages:
+        msg = message.to_dict()
+        message_data.append({
+            'sender': msg.get('sender'),
+            'text': msg.get('text'),
+            'timestamp': msg.get('timestamp')
+        })
+
+    return JsonResponse({'messages': message_data})
+
 
 # Create views 
 def home(request): 
@@ -148,7 +199,7 @@ class SubclubList(APIView):
         subclubs = Subclub.objects.all()
         serializer = SubclubSerializer(subclubs, many=True)
         return Response(serializer.data)
-    
+
 class RegisterTrip(APIView):
     def post(self, request):
         student_id = request.data.get('student_id')
