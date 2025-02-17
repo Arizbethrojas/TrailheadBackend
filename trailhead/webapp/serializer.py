@@ -18,9 +18,10 @@ class SubclubSerializer(serializers.ModelSerializer):
         fields = ['id', 'subclub_name']
 
 class TripRegistrationSerializer(serializers.ModelSerializer):
+    student_name = serializers.ReadOnlyField(source="student.student_name")
     class Meta:
         model = TripRegistration
-        fields = ['id', 'student', 'trip']
+        fields = ['id', 'student', 'trip', 'student_name']
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
