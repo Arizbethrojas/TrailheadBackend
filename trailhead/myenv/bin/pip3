@@ -1,4 +1,6 @@
-#!/Users/arizbethrojas/Downloads/cosc98/TrailheadBackend/trailhead/myenv/bin/python
+#!/bin/sh
+'''exec' "/Users/colinkearns/Desktop/Senior Year/CS98.2tryagain/backend/TrailheadBackend/trailhead/myenv/bin/python3.13" "$0" "$@"
+' '''
 # -*- coding: utf-8 -*-
 import re
 import sys
