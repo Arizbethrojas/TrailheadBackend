@@ -1,11 +1,11 @@
 from django.shortcuts import render, HttpResponse, redirect
-from .models import TodoItem, Trip, Subclub, TripRegistration, Student
+from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Waitlist
 from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import IsTripLeader
 from rest_framework import status
-from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer
+from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, WaitlistSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 
@@ -337,6 +337,40 @@ class SubclubList(APIView):
         subclubs = Subclub.objects.all()
         serializer = SubclubSerializer(subclubs, many=True)
         return Response(serializer.data)
+    
+class RegisterWaitlist(APIView):
+    #adds a user to the waitlist
+    def post(self, request):
+        student_id = request.data.get('student_id')
+        trip_id = request.data.get('trip_id')
+
+        if not student_id or not trip_id:
+            return Response({'error': 'Student ID and Trip ID required'}, status=status.HTTP_400_BAD_REQUEST)
+
+        try:
+            student = Student.objects.get(id=student_id)
+            trip = Trip.objects.get(id=trip_id)
+
+            registration = Waitlist(waitlist_student=student, waitlist_trip=trip)
+            registration.save()
+
+            serializer = WaitlistSerializer(registration)
+
+            return Response({
+                'registration_id': serializer.data,
+                'message': 'You have been added to the waitlist!'
+            }, status=status.HTTP_201_CREATED)
+        except Student.DoesNotExist:
+            return Response({'error': 'Student not found' }, status=status.HTTP_404_NOT_FOUND)
+        except Trip.DoesNotExist:
+            return Response({'error': 'Trip not found' }, status=status.HTTP_404_NOT_FOUND)
+        
+    def get(self, request, trip_id):
+        waitlist = Waitlist.objects.filter(waitlist_trip=trip_id).select_related('waitlist_student')
+        serializer = WaitlistSerializer(waitlist, many=True)
+        return Response(serializer.data)
+    
+
     
 class RegisterTrip(APIView):
     def post(self, request):
