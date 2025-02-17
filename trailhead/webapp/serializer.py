@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trip, Subclub, TripRegistration
+from .models import Trip, Subclub, TripRegistration, Student, TripLeader, Waitlist, Enemies
 
 # class TripSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -21,3 +21,25 @@ class TripRegistrationSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripRegistration
         fields = ['id', 'student', 'trip']
+
+class StudentSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Student
+        fields = ['id', 'student_name', 'is_trip_leader', 'allergies', 'class_year', 'pronouns', 'profile_picture', 'favorite_subclubs']
+
+
+class TripLeaderSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = TripLeader
+        fields = ['id', 'leader_name', 'leader_subclub']
+
+class WaitlistSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Waitlist
+        fields = ['id', 'waitlist_student', 'waitlist_trip']
+
+class EnemiesSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Enemies
+        fields = ['id', 'complainer_id', 'receiver_id']
+

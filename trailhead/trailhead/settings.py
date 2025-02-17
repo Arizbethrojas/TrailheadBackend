@@ -10,7 +10,12 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/5.1/ref/settings/
 """
 import os
+from dotenv import load_dotenv
 from pathlib import Path
+from datetime import timedelta
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -30,6 +35,9 @@ DEBUG = True
 
 ALLOWED_HOSTS = []
 
+#HANDLE MEDIA 
+MEDIA_URL = '/media/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Application definition
 # here we can add any additional apps, such as trip leaders, admin, regular users etc
@@ -44,6 +52,27 @@ INSTALLED_APPS = [
     "webapp",
     "corsheaders",
 ]
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ),
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+    ),
+}
+
+# JWT Settings (Optional: You can configure JWT expiration time and other options)
+SIMPLE_JWT = {
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=60),  # Set access token lifetime
+    'REFRESH_TOKEN_LIFETIME': timedelta(days=1),  # Set refresh token lifetime
+    'ROTATE_REFRESH_TOKENS': False,  # Set to True if you want to rotate refresh tokens
+    'BLACKLIST_AFTER_ROTATION': False,  # Whether to blacklist the refresh token after it's rotated
+    'ALGORITHM': 'HS256',  # Algorithm used to sign the JWT token
+    'SIGNING_KEY': os.getenv('JWT_SECRET', 'your-default-secret-key'),  
+    'VERIFYING_KEY': None,  # Only for asymmetric algorithms (e.g., RS256)
+    'AUTH_HEADER_TYPES': ('Bearer',),  # Use Bearer authorization header
+}
 
 MIDDLEWARE = [
     "corsheaders.middleware.CorsMiddleware",
@@ -134,3 +163,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",
     "http://localhost:3001",
 ]
+
+# Redirect URLs after login/logout
+LOGIN_REDIRECT_URL = '/'  # Or wherever you want users to go after logging in
+LOGOUT_REDIRECT_URL = '/'  # Redirect after logging out

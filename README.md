@@ -17,7 +17,6 @@ on Windows: myenv\Scripts\activate
 To install Django: 
 `pip install django`
 In order to initialize a Django project within this repo, run this command: 
-` django-admin startproject trip_planner_backend`
 Next, to download all dependencies: 
 `pip install -r dependencies.txt`
 Then to run the server use this command: 
