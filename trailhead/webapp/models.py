@@ -48,6 +48,7 @@ class Trip(models.Model):
 
 class Student(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE)
+    email = models.CharField(max_length = 255)
     student_name = models.CharField(max_length=255)
     is_trip_leader = models.BooleanField(default=False)
     allergies = models.TextField(blank=True, null=True)

@@ -18,9 +18,10 @@ class SubclubSerializer(serializers.ModelSerializer):
         fields = ['id', 'subclub_name']
 
 class TripRegistrationSerializer(serializers.ModelSerializer):
+    student_name = serializers.ReadOnlyField(source="student.student_name")
     class Meta:
         model = TripRegistration
-        fields = ['id', 'student', 'trip']
+        fields = ['id', 'student', 'trip', 'student_name']
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:
@@ -33,9 +34,10 @@ class TripLeaderSerializer(serializers.ModelSerializer):
         fields = ['id', 'leader_name', 'leader_subclub']
 
 class WaitlistSerializer(serializers.ModelSerializer):
+    student_name = serializers.ReadOnlyField(source='waitlist_student.student_name')
     class Meta:
         model = Waitlist
-        fields = ['id', 'waitlist_student', 'waitlist_trip']
+        fields = ['id', 'waitlist_student', 'waitlist_trip', 'student_name']
 
 class EnemiesSerializer(serializers.ModelSerializer):
     class Meta:
