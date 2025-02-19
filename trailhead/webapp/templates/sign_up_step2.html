@@ -1,0 +1,21 @@
+<!-- templates/sign_up_step2.html -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Step 2: Personal Details</title>
+</head>
+<body>
+    <h2>Step 2: Personal Details</h2>
+
+    <form method="POST">
+        {% csrf_token %}
+        {{ form.as_p }}
+
+        <button type="submit">Next</button>
+    </form>
+
+    <p>Don't have an account? <a href="{% url 'sign_up_step1' %}">Go back to Step 1</a></p>
+</body>
+</html>
