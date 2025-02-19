@@ -28,7 +28,6 @@ class StudentSerializer(serializers.ModelSerializer):
         model = Student
         fields = ['id', 'student_name', 'is_trip_leader', 'allergies', 'class_year', 'pronouns', 'profile_picture', 'favorite_subclubs']
 
-
 class TripLeaderSerializer(serializers.ModelSerializer):
     class Meta:
         model = TripLeader
@@ -44,4 +43,5 @@ class EnemiesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enemies
         fields = ['id', 'complainer_id', 'receiver_id']
+
 
