@@ -8,7 +8,7 @@ print("Current working directory:", os.getcwd())
 
 
 # Path to your service account key file
-cred = credentials.Certificate('webapp/firebase/trai-47353-firebase-adminsdk-fbsvc-23759256c6.json')
+cred = credentials.Certificate('path')
 
 # Initialize Firebase Admin SDK
 firebase_admin.initialize_app(cred)
