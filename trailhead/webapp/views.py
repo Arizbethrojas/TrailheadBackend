@@ -203,11 +203,7 @@ from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import IsTripLeader
 from rest_framework import status
-<<<<<<< HEAD
-from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, StudentSerializer
-=======
-from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, WaitlistSerializer
->>>>>>> test
+from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, WaitlistSerializer, StudentSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -480,9 +476,6 @@ class ViewRegistrationsByStudent(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
-        
-<<<<<<< HEAD
-=======
 
 class StudentProfileView(APIView):
     def get(self, request):
@@ -599,4 +592,3 @@ class SubclubTripsView(APIView):
 #             return Response(trips_data)
 #         except Exception as e:
 #             return Response({'error': str(e)}, status=400)
->>>>>>> test
