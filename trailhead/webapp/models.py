@@ -75,3 +75,12 @@ class Waitlist(models.Model):
 class Enemies(models.Model):
     complainer_id = models.ForeignKey(Student, related_name='complainers', on_delete=models.CASCADE)
     receiver_id = models.ForeignKey(Student, related_name='receivers', on_delete=models.CASCADE)
+
+class Marker(models.Model):
+    latitude = models.FloatField()
+    longitude = models.FloatField()
+    image = models.ImageField(upload_to='markers/')
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"Marker at ({self.latitude}, {self.longitude})"
