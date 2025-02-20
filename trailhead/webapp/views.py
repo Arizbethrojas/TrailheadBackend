@@ -195,6 +195,11 @@
 #         except Student.DoesNotExist:
 #             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
         
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+from .firebase.firebase_admin import db
+from .firebase.firebase_admin import firestore
+import json
 
 from django.shortcuts import render, HttpResponse, redirect
 from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Waitlist, Marker
@@ -211,6 +216,44 @@ from rest_framework_simplejwt.tokens import RefreshToken
 from django.views.decorators.csrf import csrf_exempt
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
+
+@csrf_exempt
+def send_message(request):
+   if request.method == "POST":
+       try:
+           # Parse the JSON body
+           data = json.loads(request.body)
+           message_text = data.get("message", "")
+           sender = data.get("sender", "Anonymous")
+           if message_text:
+               # Save the message to Firestore
+               message_ref = db.collection('messages').add({
+                   "text": message_text,
+                   "sender": sender,
+                   "timestamp": firestore.SERVER_TIMESTAMP,
+               })
+               return JsonResponse({"status": "success", "message": "Message sent"})
+           else:
+               return JsonResponse({"status": "error", "message": "Message text is empty"})
+       except json.JSONDecodeError:
+           return JsonResponse({"status": "error", "message": "Invalid JSON format"})
+   else:
+       return JsonResponse({"status": "error", "message": "Invalid request method"})
+  
+def get_messages(request):
+   # Get messages from Firestore
+   messages_ref = db.collection('messages').order_by('timestamp')
+   messages = messages_ref.stream()
+   # Prepare the response data
+   message_data = []
+   for message in messages:
+       msg = message.to_dict()
+       message_data.append({
+           'sender': msg.get('sender'),
+           'text': msg.get('text'),
+           'timestamp': msg.get('timestamp')
+       })
+   return JsonResponse({'messages': message_data})
 
 # Create views 
 def home(request): 
