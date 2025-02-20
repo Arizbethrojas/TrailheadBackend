@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import Trip, Subclub, TripRegistration, Student, TripLeader, Waitlist, Enemies
+from .models import Trip, Subclub, TripRegistration, Student, TripLeader, Waitlist, Enemies, Marker
 
 # class TripSerializer(serializers.ModelSerializer):
 #     class Meta:
@@ -43,5 +43,10 @@ class EnemiesSerializer(serializers.ModelSerializer):
     class Meta:
         model = Enemies
         fields = ['id', 'complainer_id', 'receiver_id']
+
+class MarkerSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Marker
+        fields = ['id', 'latitude', 'longitude', 'image', 'created_at']
 
 

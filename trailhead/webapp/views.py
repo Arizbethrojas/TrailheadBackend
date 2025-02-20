@@ -202,13 +202,14 @@ from .firebase.firebase_admin import firestore
 import json
 
 from django.shortcuts import render, HttpResponse, redirect
-from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Waitlist
+from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Waitlist, Marker
 from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import IsTripLeader
-from rest_framework import status
-from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, WaitlistSerializer, StudentSerializer
+from rest_framework import status, generics
+from rest_framework.parsers import MultiPartParser, FormParser
+from .serializer import TripSerializer, SubclubSerializer, TripRegistrationSerializer, WaitlistSerializer, StudentSerializer, MarkerSerializer
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -591,6 +592,12 @@ class SubclubTripsView(APIView):
             return Response(trips_data)
         except Exception as e:
             return Response({'error': str(e)}, status=400)
+        
+class MarkerListCreateView(generics.ListCreateAPIView):
+    queryset = Marker.objects.all()
+    serializer_class = MarkerSerializer
+    parser_classes = (MultiPartParser, FormParser)  # Handle image uploads
+    permission_classes = [AllowAny]
         
 # class StudentTripsView(APIView):
 #     def get(self, request, student_id):
