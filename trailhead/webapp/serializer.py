@@ -40,9 +40,10 @@ class WaitlistSerializer(serializers.ModelSerializer):
         fields = ['id', 'waitlist_student', 'waitlist_trip', 'student_name']
 
 class EnemiesSerializer(serializers.ModelSerializer):
+    blocked_name = serializers.ReadOnlyField(source='receiver_id.student_name')
     class Meta:
         model = Enemies
-        fields = ['id', 'complainer_id', 'receiver_id']
+        fields = ['id', 'complainer_id', 'receiver_id', 'blocked_name']
 
 class MarkerSerializer(serializers.ModelSerializer):
     class Meta:
