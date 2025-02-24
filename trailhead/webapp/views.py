@@ -340,7 +340,7 @@ class StudentProfileView(APIView):
             
             # Get trips where user is leader
             led_trips = Trip.objects.filter(
-                trip_leader=student.student_name  # Assuming trip_leader stores the student_name
+                trip_leader=student.id  
             )
 
             return Response({
@@ -356,7 +356,7 @@ class StudentProfileView(APIView):
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
         
-    #returns a users name based on their id
+    #returns a users name based on their id, for displaying the leaders name bc trip datatype stores trip_leader as an id
     def get_name_by_id(self, student_id):
         try:
             student = Student.objects.get(id=student_id)
