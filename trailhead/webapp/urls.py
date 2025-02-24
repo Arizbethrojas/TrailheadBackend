@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 # list of our paths
 urlpatterns = [
     path('api/student/current/', StudentProfileView.as_view()),
+    path('api/student/<int:student_id>/', StudentProfileView.as_view(), name='get-name-by-id'),
     path('api/student/<int:student_id>/trips/', StudentTripsView.as_view()),
     path('api/subclub/<int:subclub_id>/trips/', SubclubTripsView.as_view()),
     path("", views.home, name ="home"), #this is an empty path to the base URL of our website

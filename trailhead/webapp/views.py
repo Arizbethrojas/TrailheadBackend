@@ -325,7 +325,11 @@ class ViewRegistrationsByStudent(APIView):
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
 
 class StudentProfileView(APIView):
-    def get(self, request):
+    def get(self, request, student_id=None):
+
+        #if trying to get the name of a specific student
+        if student_id is not None:
+            return self.get_name_by_id(student_id)
         try:
             student = Student.objects.get(user=request.user)
             
@@ -351,6 +355,15 @@ class StudentProfileView(APIView):
             })
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
+        
+    #returns a users name based on their id
+    def get_name_by_id(self, student_id):
+        try:
+            student = Student.objects.get(id=student_id)
+            return Response({'student_id': student_id, 'student_name': student.student_name}, status=status.HTTP_200_OK)
+        except Student.DoesNotExist:
+            return Response({'errror': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
+
         
 class StudentTripsView(APIView):
     def get(self, request, student_id):
