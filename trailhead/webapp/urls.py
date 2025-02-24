@@ -1,7 +1,7 @@
 #here is where we will place different URL routes and then connect them to our views 
 from django.urls import path 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent, RegisterStudent, StudentProfileView, StudentTripsView, SubclubTripsView, RegisterWaitlist, MarkerListCreateView
+from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent, RegisterStudent, StudentProfileView, StudentTripsView, SubclubTripsView, RegisterWaitlist, MarkerListCreateView, BlockedUserList, StudentListView
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -33,4 +33,6 @@ urlpatterns = [
     path("api/register/", views.RegisterStudent, name="register-student"),  
     path('send_message/', views.send_message, name='send_message'),
     path('get_messages/', views.get_messages, name='get_messages'),
+    path('api/blocked-users/', BlockedUserList.as_view(), name='blocked-user-list'),
+    path('api/students/', StudentListView.as_view(), name='students-list'),
 ]
