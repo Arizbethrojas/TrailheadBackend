@@ -12,6 +12,7 @@ class TodoItem(models.Model):
     title = models.CharField(max_length=200)
     completed = models.BooleanField(default=False)
 
+
 class Subclub(models.Model):
     subclub_name = models.CharField(max_length=255)
 

@@ -17,11 +17,24 @@ class SubclubSerializer(serializers.ModelSerializer):
         model = Subclub
         fields = ['id', 'subclub_name']
 
+### Changed - workaround for badges not showing right trip id
 class TripRegistrationSerializer(serializers.ModelSerializer):
-    student_name = serializers.ReadOnlyField(source="student.student_name")
+    trip_name = serializers.CharField(source='trip.trip_name')
+    trip_date = serializers.DateField(source='trip.trip_date')
+    trip_description = serializers.CharField(source='trip.trip_description')
+    trip_leader = serializers.CharField(source='trip.trip_leader')
+    subclub = serializers.SerializerMethodField()
+    
+    def get_subclub(self, obj):
+        if obj.trip.subclub:
+            if hasattr(obj.trip.subclub, 'subclub_name'):
+                return obj.trip.subclub.subclub_name
+            return obj.trip.subclub
+        return None
+    
     class Meta:
         model = TripRegistration
-        fields = ['id', 'student', 'trip', 'student_name']
+        fields = ['id', 'trip_name', 'trip_date', 'trip_description', 'trip_leader', 'subclub']
 
 class StudentSerializer(serializers.ModelSerializer):
     class Meta:

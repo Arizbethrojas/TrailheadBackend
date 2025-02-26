@@ -17,13 +17,18 @@ on Windows: myenv\Scripts\activate
 To install Django: 
 `pip install django`
 In order to initialize a Django project within this repo, run this command: 
-Next, to download all dependencies: 
-`pip install -r dependencies.txt`
+` django-admin startproject trip_planner_backend` --don't run this every time
+Next, to set up a virtual environment for Python related dependencies and the djangorestframework, run this command: 
+`pip install django djangorestframework`
+`pip install django-cors-headers`
 Then to run the server use this command: 
 `python manage.py runserver`
 
 
 ## Deployment
+
+TODO: We will make a dependencies.txt file in which we will maintain all the dependecies this project requires so that we can run this script: 
+`pip install -r dependencies.txt` instead of running all of those pesky individual commands. 
 
 To get the server running: `python manage.py runserver`
 
