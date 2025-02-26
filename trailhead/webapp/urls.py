@@ -1,7 +1,7 @@
 #here is where we will place different URL routes and then connect them to our views 
 from django.urls import path 
 from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
-from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent, StudentProfileView, StudentTripsView, SubclubTripsView, RegisterWaitlist
+from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent, RegisterStudent, StudentProfileView, StudentTripsView, SubclubTripsView, RegisterWaitlist, MarkerListCreateView, BlockedUserList, StudentListView
 from . import views
 from django.contrib.auth import views as auth_views
 
@@ -9,6 +9,7 @@ from django.contrib.auth import views as auth_views
 # list of our paths
 urlpatterns = [
     path('api/student/current/', StudentProfileView.as_view()),
+    path('api/student/<int:student_id>/', StudentProfileView.as_view(), name='get-name-by-id'),
     path('api/student/<int:student_id>/trips/', StudentTripsView.as_view()),
     path('api/subclub/<int:subclub_id>/trips/', SubclubTripsView.as_view()),
     path("", views.home, name ="home"), #this is an empty path to the base URL of our website
@@ -29,4 +30,10 @@ urlpatterns = [
     path('sign_up_step1/', views.sign_up_step1, name='sign_up_step1'),
     path('sign_up_step2/', views.sign_up_step2, name='sign_up_step2'),
     path('sign_up_step3/', views.sign_up_step3, name='sign_up_step3'),
+    path('api/markers/', MarkerListCreateView.as_view(), name='marker-list-create'),
+    path("api/register/", views.RegisterStudent, name="register-student"),  
+    path('send_message/', views.send_message, name='send_message'),
+    path('get_messages/', views.get_messages, name='get_messages'),
+    path('api/blocked-users/', BlockedUserList.as_view(), name='blocked-user-list'),
+    path('api/students/', StudentListView.as_view(), name='students-list'),
 ]
