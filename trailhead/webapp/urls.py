@@ -4,6 +4,7 @@ from rest_framework_simplejwt.views import TokenObtainPairView, TokenRefreshView
 from .views import TripCreate, SubclubList, RegisterTrip, ViewRegistrationsByStudent, RegisterStudent, StudentProfileView, StudentTripsView, SubclubTripsView, RegisterWaitlist, MarkerListCreateView, BlockedUserList, StudentListView
 from . import views
 from django.contrib.auth import views as auth_views
+from django.views.decorators.csrf import csrf_exempt
 
 
 # list of our paths
@@ -27,9 +28,7 @@ urlpatterns = [
     path('api/token/refresh/', TokenRefreshView.as_view(), name='token_refresh'),
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(), name='logout'), 
-    path('sign_up_step1/', views.sign_up_step1, name='sign_up_step1'),
-    path('sign_up_step2/', views.sign_up_step2, name='sign_up_step2'),
-    path('sign_up_step3/', views.sign_up_step3, name='sign_up_step3'),
+    path('api/sign_up/', csrf_exempt(views.sign_up), name='sign_up'),
     path('api/markers/', MarkerListCreateView.as_view(), name='marker-list-create'),
     path("api/register/", views.RegisterStudent, name="register-student"),  
     path('send_message/', views.send_message, name='send_message'),

@@ -6,7 +6,7 @@ import json
 
 from django.shortcuts import render, HttpResponse, redirect
 from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Waitlist, Marker, Enemies
-from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
+from .forms import FullSignUpForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import IsTripLeader
@@ -99,75 +99,38 @@ def create_trip(request):
     return render(request, "create_trip.html")
 
 # Step 1: Basic Info
-def sign_up_step1(request):
+from django.shortcuts import render, redirect
+from django.contrib.auth.models import User
+from .forms import FullSignUpForm  # A combined form
+from .models import Student
+
+def sign_up(request):
     if request.method == "POST":
-        form = BasicInfoForm(request.POST)
+        form = FullSignUpForm(request.POST, request.FILES)
         if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-
-            # Save basic info in the session for later use
-            request.session['is_trip_leader'] = form.cleaned_data['is_trip_leader']
-            request.session['user_id'] = user.id
-            return redirect('sign_up_step2')
-    else:
-        form = BasicInfoForm()
-    return render(request, 'sign_up_step1.html', {'form': form})
-
-# Step 2: Personal Details
-def sign_up_step2(request):
-    if request.method == "POST":
-        form = PersonalDetailsForm(request.POST)
-        if form.is_valid():
-            # Save data in session for the next step
-            request.session['allergies'] = form.cleaned_data['allergies']
-            request.session['class_year'] = form.cleaned_data['class_year']
-            request.session['pronouns'] = form.cleaned_data['pronouns']
-            return redirect('sign_up_step3')
-    else:
-        form = PersonalDetailsForm()
-    return render(request, 'sign_up_step2.html', {'form': form})
-
-# Step 3: Profile Preferences
-def sign_up_step3(request):
-    if request.method == "POST":
-        form = ProfilePreferencesForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Fetch the user
-            user = User.objects.get(id=request.session['user_id'])
-
-            # Check if the Student record already exists
-            student, created = Student.objects.get_or_create(
-                user=user,  # Match on user
-                defaults={  # Fields to set if creating a new record
-                    'student_name': user.username,
-                    'is_trip_leader': request.session.get('is_trip_leader', False),
-                    'allergies': request.session.get('allergies', ''),
-                    'class_year': request.session.get('class_year', ''),
-                    'pronouns': request.session.get('pronouns', '')
-                }
+            # Create user
+            user = User.objects.create_user(
+                username=form.cleaned_data['username'],
+                email=form.cleaned_data['email'],
+                password=form.cleaned_data['password']
             )
 
-            # If the record already exists, update the fields
-            if not created:
-                student.is_trip_leader = request.session.get('is_trip_leader', False)
-                student.allergies = request.session.get('allergies', '')
-                student.class_year = request.session.get('class_year', '')
-                student.pronouns = request.session.get('pronouns', '')
+            # Create associated Student profile
+            student = Student.objects.create(
+                user=user,
+                student_name=user.username,
+                is_trip_leader=form.cleaned_data.get('is_trip_leader', False),
+                allergies=form.cleaned_data.get('allergies', ''),
+                class_year=form.cleaned_data.get('class_year', ''),
+                pronouns=form.cleaned_data.get('pronouns', ''),
+                profile_picture=form.cleaned_data.get('profile_picture')
+            )
 
-            # Save the profile picture
-            if form.cleaned_data['profile_picture']:
-                student.profile_picture = form.cleaned_data['profile_picture']
-
-            # Save favorite subclubs
-            student.save()
-            student.favorite_subclubs.set(form.cleaned_data['favorite_subclubs'])
-
-            return redirect('home')
+            return redirect('home')  # Redirect to homepage after signup
     else:
-        form = ProfilePreferencesForm()
-    return render(request, 'sign_up_step3.html', {'form': form})
+        form = FullSignUpForm()
+
+    return render(request, 'sign_up.html', {'form': form})
 
 @csrf_exempt  
 @api_view(['POST'])
