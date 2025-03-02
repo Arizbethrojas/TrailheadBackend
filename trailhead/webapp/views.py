@@ -441,6 +441,21 @@ class BlockedUserList(APIView):
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
         
+    def delete(self, request):
+        receiver_id = request.data.get('receiver')
+        complainer_id = request.data.get('complainer')
+        try:
+            receiver = Student.objects.get(id=receiver_id)
+            complainer = Student.objects.get(id=complainer_id)
+            entry = Enemies.objects.filter(complainer_id=complainer, receiver_id=receiver)
+            if not entry.exists():
+                return Response({"error": "entry does not exist"})
+            entry.delete()
+            return Response({"message": "User unblocked"})
+        except:
+            return Response({"error": "Error unblocking user"})
+
+        
 #returns a list of all students, for the purpose of blocking a user
 class StudentListView(APIView):
     def get(self, request):
