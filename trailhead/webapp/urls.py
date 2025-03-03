@@ -35,5 +35,6 @@ urlpatterns = [
     path('send_message/', views.send_message, name='send_message'),
     path('get_messages/', views.get_messages, name='get_messages'),
     path('api/blocked-users/', BlockedUserList.as_view(), name='blocked-user-list'),
+    path('api/blocked-users/remove/', BlockedUserList.as_view(), name='unblock-user'),
     path('api/students/', StudentListView.as_view(), name='students-list'),
 ]
