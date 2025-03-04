@@ -21,6 +21,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
 @csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def send_message(request):
    if request.method == "POST":
        try:
@@ -28,21 +30,24 @@ def send_message(request):
            data = json.loads(request.body)
            message_text = data.get("message", "")
            sender = data.get("sender", "Anonymous")
-           if message_text:
+           receiver = data.get("receiver", None)
+
+           if message_text and receiver:
                # Save the message to Firestore
                message_ref = db.collection('messages').add({
                    "text": message_text,
                    "sender": sender,
+                   "receiver": receiver,
                    "timestamp": firestore.SERVER_TIMESTAMP,
                })
                return JsonResponse({"status": "success", "message": "Message sent"})
            else:
-               return JsonResponse({"status": "error", "message": "Message text is empty"})
+               return JsonResponse({"status": "error", "message": "Message text and receiver are both required"})
        except json.JSONDecodeError:
            return JsonResponse({"status": "error", "message": "Invalid JSON format"})
    else:
        return JsonResponse({"status": "error", "message": "Invalid request method"})
-  
+
 def get_messages(request):
    # Get messages from Firestore
    messages_ref = db.collection('messages').order_by('timestamp')
@@ -53,6 +58,7 @@ def get_messages(request):
        msg = message.to_dict()
        message_data.append({
            'sender': msg.get('sender'),
+           'receiver': msg.get('receiver'),
            'text': msg.get('text'),
            'timestamp': msg.get('timestamp')
        })
