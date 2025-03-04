@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sign Up</title>
+</head>
+<body>
+    <h2>Sign Up</h2>
+
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        
+        <div>
+            <label for="id_username">Username</label>
+            {{ form.username }}
+        </div>
+        
+        <div>
+            <label for="id_email">Email</label>
+            {{ form.email }}
+        </div>
+
+        <div>
+            <label for="id_password">Password</label>
+            {{ form.password }}
+        </div>
+
+        <div>
+            <label for="id_allergies">Allergies</label>
+            {{ form.allergies }}
+        </div>
+
+        <div>
+            <label for="id_class_year">Class Year</label>
+            {{ form.class_year }}
+        </div>
+
+        <div>
+            <label for="id_pronouns">Pronouns</label>
+            {{ form.pronouns }}
+        </div>
+
+        <div>
+            <label for="id_is_trip_leader">Are you a trip leader?</label>
+            {{ form.is_trip_leader }}
+        </div>
+
+        <div>
+            <label for="id_profile_picture">Profile Picture</label>
+            {{ form.profile_picture }}
+        </div>
+
+        <button type="submit">Complete Sign-Up</button>
+    </form>
+
+    <p>Already have an account? <a href="{% url 'login' %}">Log in here</a></p>
+</body>
+</html>
