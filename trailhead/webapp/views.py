@@ -98,47 +98,21 @@ def create_trip(request):
     #return the trip creation form on GET request
     return render(request, "create_trip.html")
 
-# Step 1: Basic Info
-from django.shortcuts import render, redirect
-from django.contrib.auth.models import User
-from .forms import FullSignUpForm  # A combined form
-from .models import Student
-
-def sign_up(request):
-    if request.method == "POST":
-        form = FullSignUpForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Create user
-            user = User.objects.create_user(
-                username=form.cleaned_data['username'],
-                email=form.cleaned_data['email'],
-                password=form.cleaned_data['password']
-            )
-
-            # Create associated Student profile
-            student = Student.objects.create(
-                user=user,
-                student_name=user.username,
-                is_trip_leader=form.cleaned_data.get('is_trip_leader', False),
-                allergies=form.cleaned_data.get('allergies', ''),
-                class_year=form.cleaned_data.get('class_year', ''),
-                pronouns=form.cleaned_data.get('pronouns', ''),
-                profile_picture=form.cleaned_data.get('profile_picture')
-            )
-
-            return redirect('home')  # Redirect to homepage after signup
-    else:
-        form = FullSignUpForm()
-
-    return render(request, 'sign_up.html', {'form': form})
 
 @csrf_exempt  
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def RegisterStudent(request):
+    print(f"Received data: {request.data}")
+
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
+    allergies = request.data.get('allergies', '')
+    class_year = request.data.get('class_year', '')
+    pronouns = request.data.get('pronouns', '')
+    is_trip_leader = request.data.get('trip_leader', 'false').lower() == 'true'
+    profile_picture = request.FILES.get('profile_picture') 
 
     if not username or not email or not password:
         return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -150,6 +124,19 @@ def RegisterStudent(request):
         return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
     user = User.objects.create_user(username=username, email=email, password=password)
+    
+    if Student.objects.filter(user=user).exists():
+        print(f"i cant deal, really")
+
+    student = Student.objects.create(
+        user=user,
+        student_name=username,  # Assuming student_name = username
+        allergies=allergies,
+        class_year=class_year,
+        pronouns=pronouns,
+        is_trip_leader=is_trip_leader,
+        profile_picture=profile_picture
+    )
 
     # Generate JWT tokens for authentication
     refresh = RefreshToken.for_user(user)
