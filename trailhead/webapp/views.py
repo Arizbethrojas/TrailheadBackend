@@ -6,7 +6,7 @@ import json
 
 from django.shortcuts import render, HttpResponse, redirect
 from .models import TodoItem, Trip, Subclub, TripRegistration, Student, Waitlist, Marker, Enemies
-from .forms import BasicInfoForm, PersonalDetailsForm, ProfilePreferencesForm
+from .forms import FullSignUpForm
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from .permissions import IsTripLeader
@@ -21,6 +21,8 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import AllowAny
 
 @csrf_exempt
+@api_view(['POST'])
+@permission_classes([AllowAny])
 def send_message(request):
    if request.method == "POST":
        try:
@@ -28,21 +30,22 @@ def send_message(request):
            data = json.loads(request.body)
            message_text = data.get("message", "")
            sender = data.get("sender", "Anonymous")
-           if message_text:
+           receiver = data.get("receiver", None)
+           if message_text and receiver:
                # Save the message to Firestore
                message_ref = db.collection('messages').add({
                    "text": message_text,
                    "sender": sender,
+                   "receiver": receiver,
                    "timestamp": firestore.SERVER_TIMESTAMP,
                })
                return JsonResponse({"status": "success", "message": "Message sent"})
            else:
-               return JsonResponse({"status": "error", "message": "Message text is empty"})
+               return JsonResponse({"status": "error", "message": "Message text and receiver are both required"})
        except json.JSONDecodeError:
            return JsonResponse({"status": "error", "message": "Invalid JSON format"})
    else:
        return JsonResponse({"status": "error", "message": "Invalid request method"})
-  
 def get_messages(request):
    # Get messages from Firestore
    messages_ref = db.collection('messages').order_by('timestamp')
@@ -53,6 +56,7 @@ def get_messages(request):
        msg = message.to_dict()
        message_data.append({
            'sender': msg.get('sender'),
+           'receiver': msg.get('receiver'),
            'text': msg.get('text'),
            'timestamp': msg.get('timestamp')
        })
@@ -98,84 +102,21 @@ def create_trip(request):
     #return the trip creation form on GET request
     return render(request, "create_trip.html")
 
-# Step 1: Basic Info
-def sign_up_step1(request):
-    if request.method == "POST":
-        form = BasicInfoForm(request.POST)
-        if form.is_valid():
-            user = form.save(commit=False)
-            user.set_password(form.cleaned_data['password'])
-            user.save()
-
-            # Save basic info in the session for later use
-            request.session['is_trip_leader'] = form.cleaned_data['is_trip_leader']
-            request.session['user_id'] = user.id
-            return redirect('sign_up_step2')
-    else:
-        form = BasicInfoForm()
-    return render(request, 'sign_up_step1.html', {'form': form})
-
-# Step 2: Personal Details
-def sign_up_step2(request):
-    if request.method == "POST":
-        form = PersonalDetailsForm(request.POST)
-        if form.is_valid():
-            # Save data in session for the next step
-            request.session['allergies'] = form.cleaned_data['allergies']
-            request.session['class_year'] = form.cleaned_data['class_year']
-            request.session['pronouns'] = form.cleaned_data['pronouns']
-            return redirect('sign_up_step3')
-    else:
-        form = PersonalDetailsForm()
-    return render(request, 'sign_up_step2.html', {'form': form})
-
-# Step 3: Profile Preferences
-def sign_up_step3(request):
-    if request.method == "POST":
-        form = ProfilePreferencesForm(request.POST, request.FILES)
-        if form.is_valid():
-            # Fetch the user
-            user = User.objects.get(id=request.session['user_id'])
-
-            # Check if the Student record already exists
-            student, created = Student.objects.get_or_create(
-                user=user,  # Match on user
-                defaults={  # Fields to set if creating a new record
-                    'student_name': user.username,
-                    'is_trip_leader': request.session.get('is_trip_leader', False),
-                    'allergies': request.session.get('allergies', ''),
-                    'class_year': request.session.get('class_year', ''),
-                    'pronouns': request.session.get('pronouns', '')
-                }
-            )
-
-            # If the record already exists, update the fields
-            if not created:
-                student.is_trip_leader = request.session.get('is_trip_leader', False)
-                student.allergies = request.session.get('allergies', '')
-                student.class_year = request.session.get('class_year', '')
-                student.pronouns = request.session.get('pronouns', '')
-
-            # Save the profile picture
-            if form.cleaned_data['profile_picture']:
-                student.profile_picture = form.cleaned_data['profile_picture']
-
-            # Save favorite subclubs
-            student.save()
-            student.favorite_subclubs.set(form.cleaned_data['favorite_subclubs'])
-
-            return redirect('home')
-    else:
-        form = ProfilePreferencesForm()
-    return render(request, 'sign_up_step3.html', {'form': form})
 
 @csrf_exempt  
 @api_view(['POST'])
 @permission_classes([AllowAny])
 def RegisterStudent(request):
+    print(f"Received data: {request.data}")
+
     username = request.data.get('username')
     email = request.data.get('email')
     password = request.data.get('password')
+    allergies = request.data.get('allergies', '')
+    class_year = request.data.get('class_year', '')
+    pronouns = request.data.get('pronouns', '')
+    is_trip_leader = request.data.get('trip_leader', 'false').lower() == 'true'
+    profile_picture = request.FILES.get('profile_picture') 
 
     if not username or not email or not password:
         return Response({"error": "All fields are required"}, status=status.HTTP_400_BAD_REQUEST)
@@ -187,6 +128,19 @@ def RegisterStudent(request):
         return Response({"error": "Email already exists"}, status=status.HTTP_400_BAD_REQUEST)
 
     user = User.objects.create_user(username=username, email=email, password=password)
+    
+    if Student.objects.filter(user=user).exists():
+        print(f"i cant deal, really")
+
+    student = Student.objects.create(
+        user=user,
+        student_name=username,  # Assuming student_name = username
+        allergies=allergies,
+        class_year=class_year,
+        pronouns=pronouns,
+        is_trip_leader=is_trip_leader,
+        profile_picture=profile_picture
+    )
 
     # Generate JWT tokens for authentication
     refresh = RefreshToken.for_user(user)
@@ -323,7 +277,7 @@ class ViewRegistrationsByStudent(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
+    
 class StudentProfileView(APIView):
     def get(self, request, student_id=None):
 
@@ -350,8 +304,9 @@ class StudentProfileView(APIView):
                 'allergies': student.allergies,
                 'is_trip_leader': student.is_trip_leader,
                 'id': student.id,
+                'profile_picture': student.profile_picture.url if student.profile_picture else None,
                 'registered_trips': TripSerializer(registered_trips, many=True).data,
-                'led_trips': TripSerializer(led_trips, many=True).data
+                'led_trips': TripSerializer(led_trips, many=True).data,
             })
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
@@ -440,6 +395,21 @@ class BlockedUserList(APIView):
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
         except Exception as e:
             return Response({'error': str(e)}, status=status.HTTP_400_BAD_REQUEST)
+        
+    def delete(self, request):
+        receiver_id = request.data.get('receiver')
+        complainer_id = request.data.get('complainer')
+        try:
+            receiver = Student.objects.get(id=receiver_id)
+            complainer = Student.objects.get(id=complainer_id)
+            entry = Enemies.objects.filter(complainer_id=complainer, receiver_id=receiver)
+            if not entry.exists():
+                return Response({"error": "entry does not exist"})
+            entry.delete()
+            return Response({"message": "User unblocked"})
+        except:
+            return Response({"error": "Error unblocking user"})
+
         
 #returns a list of all students, for the purpose of blocking a user
 class StudentListView(APIView):

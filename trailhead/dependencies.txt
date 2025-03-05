@@ -8,4 +8,5 @@ django.urls
 djangorestframework-simplejwt==5.4.0
 setuptools
 Pillow
-firebase-admin
+firebase_admin
+

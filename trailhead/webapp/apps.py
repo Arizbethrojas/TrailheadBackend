@@ -5,5 +5,3 @@ class WebappConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
     name = "webapp"
 
-    def ready(self):
-        import webapp.signals  # Import signals to ensure they are loaded
