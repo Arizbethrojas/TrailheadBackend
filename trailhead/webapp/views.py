@@ -273,7 +273,7 @@ class ViewRegistrationsByStudent(APIView):
             return Response(serializer.data, status=status.HTTP_200_OK)
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=status.HTTP_404_NOT_FOUND)
-
+    
 class StudentProfileView(APIView):
     def get(self, request, student_id=None):
 
@@ -300,8 +300,9 @@ class StudentProfileView(APIView):
                 'allergies': student.allergies,
                 'is_trip_leader': student.is_trip_leader,
                 'id': student.id,
+                'profile_picture': student.profile_picture.url if student.profile_picture else None,
                 'registered_trips': TripSerializer(registered_trips, many=True).data,
-                'led_trips': TripSerializer(led_trips, many=True).data
+                'led_trips': TripSerializer(led_trips, many=True).data,
             })
         except Student.DoesNotExist:
             return Response({'error': 'Student not found'}, status=404)
