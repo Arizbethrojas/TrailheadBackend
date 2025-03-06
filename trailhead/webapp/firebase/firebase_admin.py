@@ -13,7 +13,7 @@ print("Current working directory:", os.getcwd())
 # api_key = os.getenv('FIREBASE_KEY')
 # url = 'webapp/firebase/' + api_key
 #render stores this in the root file
-cred = credentials.Certificate("/trai-47353-firebase-adminsdk-fbsvc-4a91659dff.json")
+cred = credentials.Certificate("etc/secrets/trai-47353-firebase-adminsdk-fbsvc-4a91659dff.json")
 
 
 # Initialize Firebase Admin SDK
