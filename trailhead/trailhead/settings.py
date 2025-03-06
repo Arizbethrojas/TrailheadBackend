@@ -136,6 +136,7 @@ DEFAULT_AUTO_FIELD = "django.db.models.BigAutoField"
 # CORS settings (allow access from frontend)
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:3000",  # Allow React frontend
+    "https://utrekfrontend.onrender.com", #On render
 ]
 
 # Allow credentials in CORS requests
@@ -144,6 +145,7 @@ CORS_ALLOW_CREDENTIALS = True
 # CSRF Settings (to allow cross-origin requests)
 CSRF_TRUSTED_ORIGINS = [
     "http://localhost:3000",  # Allow React frontend
+    "https://utrekfrontend.onrender.com", #On render
 ]
 
 # CSRF Exemptions (for API Views that handle external requests, like registration)
