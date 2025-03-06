@@ -22,6 +22,8 @@ SECRET_KEY = "django-insecure-!(=z%!^6nx%uw)8lmw&#^t*0z!95jlw6ba6alk&ba@c7vbx_qu
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
+PORT = os.environ.get("PORT")
+
 ALLOWED_HOSTS = ['trailheadbackend.onrender.com']
 
 # Handle media 
